@@ -1,6 +1,7 @@
 import express from 'express';
 import pino from 'pino-http';
 import cors from 'cors';
+import cookieParser from 'cookie-parser';
 
 import router from './routers/index.js';
 import { errorHandler } from './middlewares/errorHandler.js';
@@ -21,6 +22,7 @@ export const startServer = () => {
   );
 
   app.use(cors());
+  app.use(cookieParser());
 
   const logger = pino({
     transport: {
