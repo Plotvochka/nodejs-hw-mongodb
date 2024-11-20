@@ -14,6 +14,8 @@ import { parseSortParams } from '../utils/parseSortParams.js';
 
 import { parseFilterParams } from '../utils/parseFilterParams.js';
 
+import mongoose from 'mongoose';
+
 export const getContactsController = async (req, res, next) => {
   const { _id: userId } = req.user;
   const { page, perPage } = parsePaginationParams(req.query);
@@ -38,6 +40,10 @@ export const getContactsController = async (req, res, next) => {
 export const getContactByIdController = async (req, res, next) => {
   const { _id: userId } = req.user;
   const { contactId } = req.params;
+  if (!mongoose.Types.ObjectId.isValid(contactId)) {
+    throw createHttpError(404, 'Contact not found');
+  }
+
   const contact = await getContactById(contactId, userId);
 
   // Відповідь, якщо контакт не знайдено
