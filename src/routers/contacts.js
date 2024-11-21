@@ -4,7 +4,7 @@ import {
   getContactByIdController,
   createContactController,
   deleteContactController,
-  upsertContactController,
+  updateContactController,
   patchContactController,
 } from '../controllers/contacts.js';
 
@@ -41,7 +41,7 @@ router.patch(
   '/:contactId',
   isValidId,
   validateBody(updateContactSchema),
-  ctrlWrapper(patchContactController),
+  ctrlWrapper(updateContactController),
 );
 
 export default router;

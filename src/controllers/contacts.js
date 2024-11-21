@@ -78,22 +78,18 @@ export const deleteContactController = async (req, res) => {
   res.status(204).send();
 };
 
-export const upsertContactController = async (req, res, next) => {
+export const updateContactController = async (req, res, next) => {
   const { contactId } = req.params;
-
-  const result = await updateContact(contactId, req.body, {
-    upsert: true,
-  });
+  const { _id: userId } = req.user;
+  const result = await updateContact(contactId, req.body, userId);
 
   if (!result) {
-    throw createHttpError(404, 'Contact not found');
+    throw createHttpError(404, `Contact not found`);
   }
 
-  const status = result.isNew ? 201 : 200;
-
-  res.status(status).json({
-    status,
-    message: `Successfully upserted a contact!`,
+  res.json({
+    status: 200,
+    message: 'Successfully patched a contact!',
     data: result.contact,
   });
 };
