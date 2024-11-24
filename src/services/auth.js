@@ -83,3 +83,12 @@ export const logout = (sessionId) =>
 export const findSession = (filter) => SessionCollection.findOne(filter);
 
 export const findUser = (filter) => UserCollection.findOne(filter);
+
+export const requestResetToken = async (email) => {
+  const user = await UsersCollection.findOne({ email });
+  if (!user) {
+    throw createHttpError(404, 'User not found');
+  }
+
+  //доповнимо її трохи пізніше
+};
