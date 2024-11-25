@@ -73,6 +73,7 @@ export const upsertContactController = async (req, res) => {
 
 export const patchContactController = async (req, res) => {
   const { id: _id } = req.params;
+  const photo = req.file;
 
   const result = await contactServices.updateContact({
     _id,
