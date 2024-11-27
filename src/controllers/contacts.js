@@ -6,6 +6,7 @@ import { parseFilterParams } from '../utils/parseContactsFilterParams.js';
 import { saveFileToUploadDir } from '../utils/saveFileToUploadDir.js';
 import { saveFileToCloudinary } from '../utils/saveFileToCloudinary.js';
 import { env } from '../utils/env.js';
+import * as path from 'node:path';
 
 export const getContactsController = async (req, res, next) => {
   const { page, perPage } = parsePaginationParams(req.query);
@@ -46,12 +47,21 @@ export const getContactByIdController = async (req, res, next) => {
 
 export const addContactController = async (req, res, next) => {
   const { _id: userId } = req.user;
+  let photo = null;
+  if (req.file) {
+    if (env('ENABLE_CLOUDINARY') === 'true') {
+      photo = await saveFileToCloudinary(req.file, 'photo');
+    } else {
+      await saveFileToUploadDir(req.file);
+      photo = path.join(req.file.filename);
+    }
+  }
 
-  const data = await contactServices.addContact({ ...req.body, userId });
+  const data = await contactServices.addContact({ ...req.body, photo, userId });
 
   res.status(201).json({
     status: 201,
-    message: 'Contacts successfullt added',
+    message: 'Contacts successfully added',
     data,
   });
 };
@@ -76,22 +86,21 @@ export const upsertContactController = async (req, res) => {
 
 export const patchContactController = async (req, res) => {
   const { id: _id } = req.params;
-  const photo = req.file;
+  const { id: userId } = req.user;
+  let photo = null;
 
-  let photoUrl;
-
-  if (photo) {
+  if (req.file) {
     if (env('ENABLE_CLOUDINARY') === 'true') {
-      photoUrl = await saveFileToCloudinary(photo);
+      photo = await saveFileToCloudinary(req.file, 'photo');
     } else {
-      photoUrl = await saveFileToUploadDir(photo);
+      await saveFileToUploadDir(req.file);
+      photo = path.join('uploads', req.file.filename);
     }
   }
-
   const result = await contactServices.updateContact({
     _id,
-    payload: req.body,
-    photo: photoUrl,
+    userId,
+    payload: { ...req.body, ...(photo && { photo }) },
   });
 
   if (!result) {
@@ -101,7 +110,7 @@ export const patchContactController = async (req, res) => {
   res.json({
     status: 200,
     message: 'Successfully patched a contact!',
-    data: result.data,
+    data: result,
   });
 };
 
