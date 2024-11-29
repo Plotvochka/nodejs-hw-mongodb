@@ -7,6 +7,7 @@ import { saveFileToUploadDir } from '../utils/saveFileToUploadDir.js';
 import { saveFileToCloudinary } from '../utils/saveFileToCloudinary.js';
 import { env } from '../utils/env.js';
 import * as path from 'node:path';
+import mongoose from 'mongoose';
 
 export const getContactsController = async (req, res, next) => {
   const { page, perPage } = parsePaginationParams(req.query);
@@ -26,13 +27,18 @@ export const getContactsController = async (req, res, next) => {
   res.json({
     status: 200,
     message: 'Successfully found contacts!',
-    data: contacts,
+    data: contacts.data,
   });
 };
 
 export const getContactByIdController = async (req, res, next) => {
   const { id } = req.params;
-  const data = await contactServices.getContactById(id);
+  const { _id: userId } = req.user;
+
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    throw createHttpError(404, 'Contact not found');
+  }
+  const data = await contactServices.getContactById(id, userId);
 
   if (!data) {
     throw createHttpError(404, 'Contact not found');
@@ -80,7 +86,7 @@ export const upsertContactController = async (req, res) => {
   res.status(status).json({
     status,
     message: 'Contact update successfull',
-    data: result,
+    data: result.data,
   });
 };
 

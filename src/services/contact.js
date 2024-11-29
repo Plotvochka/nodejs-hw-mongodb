@@ -25,7 +25,7 @@ export const getContacts = async ({
     .merge(contactsQuery)
     .countDocuments();
 
-  const students = await contactsQuery
+  const contacts = await contactsQuery
     .skip(skip)
     .limit(limit)
     .sort({ [sortBy]: sortOrder })
@@ -34,12 +34,15 @@ export const getContacts = async ({
   const paginationData = calculatePaginationData(contactsCount, perPage, page);
 
   return {
-    data: students,
+    data: contacts,
     ...paginationData,
   };
 };
 
-export const getContactById = (id) => ContactCollection.findOne(id);
+export const getContactById = async (contactId, userId) => {
+  const contact = await ContactCollection.findOne({ _id: contactId, userId });
+  return contact;
+};
 
 export const addContact = (payload) => ContactCollection.create(payload);
 
