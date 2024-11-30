@@ -46,12 +46,16 @@ export const getContactById = async (contactId, userId) => {
 
 export const addContact = (payload) => ContactCollection.create(payload);
 
-export const updateContact = async ({ _id, payload, options = {} }) => {
-  const rawResult = await ContactCollection.findOneAndUpdate({ _id }, payload, {
-    ...options,
-    new: true,
-    includeResultMetadata: true,
-  });
+export const updateContact = async ({ _id, payload, options = {}, userId }) => {
+  const rawResult = await ContactCollection.findOneAndUpdate(
+    { _id, userId },
+    payload,
+    {
+      ...options,
+      new: true,
+      includeResultMetadata: true,
+    },
+  );
   if (!rawResult || !rawResult.value) return null;
 
   return {
