@@ -8,6 +8,7 @@ import { logger } from './middlewares/logger.js';
 import authRouter from './routers/auth.js';
 import cookieParser from 'cookie-parser';
 import { UPLOAD_DIR } from './constants/index.js';
+import { swaggerDocs } from './middlewares/swaggerDocs.js';
 
 const PORT = Number(env('PORT', '3000'));
 
@@ -18,6 +19,7 @@ export const setupServer = () => {
   app.use(express.json());
   app.use(cookieParser());
   app.use('/uploads', express.static(UPLOAD_DIR));
+  app.use('/api-docs', swaggerDocs());
 
   // app.use(logger);
 
