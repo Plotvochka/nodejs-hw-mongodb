@@ -14,7 +14,7 @@
       "url": "http://localhost:3000"
     },
     {
-      "url": "https://example.com/api/v1"
+      "url": "https://nodejs-hw-mongodb-zkwo.onrender.com"
     }
   ],
   "tags": [
@@ -340,6 +340,56 @@
             "bearerAuth": []
           }
         ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "description": "Contact's name",
+                    "type": "string",
+                    "example": "John Doe"
+                  },
+                  "phoneNumber": {
+                    "description": "Contact's phone number",
+                    "type": "number",
+                    "example": 380000000001
+                  },
+                  "contactType": {
+                    "description": "Contact's type",
+                    "type": "string",
+                    "enum": [
+                      "work",
+                      "home",
+                      "personal"
+                    ]
+                  },
+                  "email": {
+                    "description": "Contact's email",
+                    "type": "string",
+                    "example": "example123@gmail.com"
+                  },
+                  "isFavourite": {
+                    "description": "Is Favourite",
+                    "type": "boolean",
+                    "example": false
+                  },
+                  "userId": {
+                    "description": "Contact's parent id",
+                    "type": "string",
+                    "example": "65e4decdd286b30065d54af9"
+                  },
+                  "photo": {
+                    "description": "Contact's photo",
+                    "type": "string",
+                    "format": "binary"
+                  }
+                }
+              }
+            }
+          }
+        },
         "parameters": [
           {
             "in": "path",
@@ -461,7 +511,8 @@
           "_id",
           "name",
           "phoneNumber",
-          "userId"
+          "userId",
+          "contactType"
         ],
         "properties": {
           "_id": {
